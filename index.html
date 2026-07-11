@@ -1053,24 +1053,34 @@
       videoId: YOUTUBE_VIDEO_ID,
       width:'2',
       height:'2',
-      playerVars:{ controls:0, disablekb:1, modestbranding:1, playsinline:1 },
+      playerVars:{
+        autoplay:1, mute:1, controls:0, disablekb:1,
+        modestbranding:1, playsinline:1, loop:1, playlist:YOUTUBE_VIDEO_ID
+      },
       events:{
-        onReady:function(){
+        onReady:function(ev){
           bgPlayerReady = true;
-          if(bgMusicWanted) bgPlayer.playVideo();
+          ev.target.mute();
+          ev.target.playVideo();
+          if(bgMusicWanted) ev.target.unMute();
         }
       }
     });
   }
 
+  /* Player is always playing muted in the background; open/close just
+     unmutes/mutes it, since unmuting inside a click handler is what
+     browsers reliably allow (a fresh unmuted play() call is not). */
   function playBgMusic(){
     bgMusicWanted = true;
-    if(bgPlayerReady) bgPlayer.playVideo();
+    if(!bgPlayerReady) return;
+    bgPlayer.playVideo();
+    if(!bgMuted) bgPlayer.unMute();
   }
 
   function pauseBgMusic(){
     bgMusicWanted = false;
-    if(bgPlayerReady) bgPlayer.pauseVideo();
+    if(bgPlayerReady) bgPlayer.mute();
   }
 
   function toggleBgMusic(){
