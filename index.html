@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Happy Birthday, Alya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#2b0505;
+    --bg-mid:#4a0d0d;
+    --bg-light:#6b1414;
+    --gold:#d9b45c;
+    --gold-bright:#f0d382;
+    --cream:#fdf6ec;
+    --paper:#faf3e6;
+    --ink:#3a2418;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html,body{
+    height:100%;
+    width:100%;
+    overflow-x:hidden;
+  }
+
+  body{
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--bg-light) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+    background-attachment:fixed;
+    color:var(--cream);
+    font-family:'Poppins', sans-serif;
+    min-height:100vh;
+    position:relative;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:3px 3px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .cursive{font-family:'Great Vibes', cursive;}
+  .serif{font-family:'Playfair Display', serif;}
+  .settled{ animation:none !important; }
+
+  /* ---------- Ambient sparkles ---------- */
+  #ambient{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .ambient-particle{
+    position:absolute;
+    bottom:-5%;
+    color:var(--gold-bright);
+    opacity:0;
+    animation-name:driftUp, twinkle;
+    animation-timing-function:linear, ease-in-out;
+    animation-iteration-count:infinite, infinite;
+  }
+  @keyframes driftUp{
+    0%{ transform:translate(0,0) rotate(0deg); }
+    100%{ transform:translate(var(--dx,20px), -110vh) rotate(180deg); }
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0; }
+    10%,90%{ opacity:var(--peak,.55); }
+    50%{ opacity:var(--peak,.85); }
+  }
+
+  /* ---------- Cursor sparkle trail ---------- */
+  .cursor-sparkle{
+    position:fixed;
+    top:0; left:0;
+    z-index:60;
+    pointer-events:none;
+    color:var(--gold-bright);
+    font-size:14px;
+    text-shadow:0 0 6px rgba(240,211,130,0.8);
+    animation:sparkleFade .8s ease-out forwards;
+  }
+  @keyframes sparkleFade{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+    100%{ opacity:0; transform:translate(-50%,-50%) translateY(-24px) scale(.4); }
+  }
+
+  /* ---------- Confetti burst ---------- */
+  .confetti-bit{
+    position:fixed;
+    top:0; left:0;
+    z-index:15;
+    width:7px; height:7px;
+    pointer-events:none;
+    border-radius:2px;
+    animation:confettiBurst .9s cubic-bezier(.2,.7,.4,1) forwards;
+  }
+  @keyframes confettiBurst{
+    0%{ transform:translate(-50%,-50%) translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(-50%,-50%) translate(var(--cx), var(--cy)) rotate(var(--cr)); opacity:0; }
+  }
+
+  /* ---------- Shimmering headings ---------- */
+  .shimmer{
+    background:linear-gradient(90deg, var(--gold-bright) 0%, #fff8e6 20%, var(--gold-bright) 40%, var(--gold-bright) 100%);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shimmerMove 4.5s linear infinite;
+  }
+  @keyframes shimmerMove{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:200% 50%; }
+  }
+
+  /* ---------- View management ---------- */
+  .view{
+    display:none;
+    min-height:100vh;
+    width:100%;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    position:relative;
+    z-index:1;
+    padding:32px 20px 60px;
+  }
+  .view.active{
+    display:flex;
+    animation:fadeIn .6s ease forwards;
+  }
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(14px) scale(.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+  .view.leaving{
+    animation:fadeOut .35s ease forwards;
+  }
+  @keyframes fadeOut{
+    from{opacity:1; transform:translateY(0) scale(1);}
+    to{opacity:0; transform:translateY(-10px) scale(.98);}
+  }
+
+  /* ---------- Overlays (Message / Flower / Cake) ---------- */
+  .overlay{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    overflow-y:auto;
+    padding:40px 16px 60px;
+  }
+  .overlay.active{
+    display:flex;
+    animation:fadeIn .45s ease forwards;
+  }
+  .overlay.leaving{ animation:fadeOut .3s ease forwards; }
+
+  .overlay-scrim{
+    position:fixed;
+    inset:0;
+    background:rgba(20,3,3,0.72);
+    backdrop-filter:blur(3px);
+    z-index:-1;
+  }
+
+  /* ---------- Landing ---------- */
+  #landing h1{
+    font-size:clamp(2.6rem, 9vw, 4.5rem);
+    text-align:center;
+    color:var(--gold-bright);
+    text-shadow:0 0 24px rgba(240,211,130,0.35);
+    margin-bottom:6px;
+  }
+  #landing .sub{
+    font-family:'Playfair Display', serif;
+    font-weight:500;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-size:clamp(.7rem, 2vw, .85rem);
+    color:rgba(253,246,236,0.65);
+    margin-bottom:44px;
+    text-align:center;
+  }
+
+  .envelope-glow{
+    position:absolute;
+    top:50%; left:50%;
+    width:340px; height:340px;
+    max-width:100vw;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(240,211,130,0.28) 0%, rgba(240,211,130,0) 70%);
+    animation:glowPulse 3s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes glowPulse{
+    0%,100%{ opacity:.6; transform:translate(-50%,-50%) scale(.92); }
+    50%{ opacity:1; transform:translate(-50%,-50%) scale(1.08); }
+  }
+
+  .envelope-wrap{
+    position:relative;
+    width:min(78vw, 300px);
+    aspect-ratio:3/2;
+    cursor:pointer;
+    filter:drop-shadow(0 18px 30px rgba(0,0,0,0.45));
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .3s ease;
+  }
+  .envelope-wrap:hover{ transform:translateY(-4px) scale(1.02); }
+  .envelope-body{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(160deg,#fdf1e0,#f2e0c2);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .envelope-shade-l, .envelope-shade-r{
+    position:absolute;
+    top:0; bottom:0; width:50%;
+    background:linear-gradient(90deg, rgba(0,0,0,0.06), transparent);
+  }
+  .envelope-shade-r{right:0; transform:scaleX(-1);}
+
+  .envelope-flap{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:60%;
+    background:linear-gradient(160deg,#f4e2c4,#e8cfa4);
+    clip-path:polygon(0 0, 100% 0, 50% 78%);
+    transform-origin:top center;
+    transition:transform .8s cubic-bezier(.65,-0.15,.35,1.3);
+    box-shadow:inset 0 -10px 18px -10px rgba(0,0,0,0.18);
+    z-index:3;
+  }
+  .envelope-wrap.opened .envelope-flap{
+    transform:rotateX(178deg);
+  }
+
+  .envelope-pocket{
+    position:absolute;
+    left:0; right:0; bottom:0; top:34%;
+    background:linear-gradient(180deg,#f7e9d1,#eddab3);
+    clip-path:polygon(0 100%, 0 22%, 50% 62%, 100% 22%, 100% 100%);
+    z-index:2;
+  }
+
+  .wax-seal{
+    position:absolute;
+    top:50%; left:50%;
+    width:64px; height:64px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #e6c16b, #b8791f 55%, #8a4f12 100%);
+    box-shadow:
+      0 6px 14px rgba(0,0,0,0.45),
+      inset 0 2px 3px rgba(255,255,255,0.5),
+      inset 0 -4px 8px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:4;
+    transition:transform .35s ease;
+  }
+  .wax-seal::before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.35);
+  }
+  .wax-seal span{
+    font-family:'Great Vibes', cursive;
+    font-size:1.7rem;
+    color:#3a2408;
+    text-shadow:0 1px 0 rgba(255,255,255,0.25);
+  }
+  .envelope-wrap:hover .wax-seal{ transform:translate(-50%,-50%) scale(1.05); }
+  .envelope-wrap.opened .wax-seal{
+    animation:crack .5s ease forwards;
+  }
+  @keyframes crack{
+    0%{transform:translate(-50%,-50%) scale(1) rotate(0deg);}
+    40%{transform:translate(-50%,-50%) scale(1.15) rotate(-8deg);}
+    100%{transform:translate(-50%,-50%) scale(0) rotate(20deg); opacity:0;}
+  }
+
+  .open-hint{
+    margin-top:26px;
+    font-size:.85rem;
+    letter-spacing:.08em;
+    color:rgba(253,246,236,0.7);
+    animation:pulse 2.2s ease-in-out infinite;
+    text-align:center;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.55;}
+    50%{opacity:1;}
+  }
+
+  /* ---------- Hub ---------- */
+  #hub h2{
+    font-size:clamp(2rem, 6vw, 3rem);
+    color:var(--gold-bright);
+    margin-bottom:8px;
+    text-align:center;
+  }
+  #hub .sub{
+    color:rgba(253,246,236,0.65);
+    margin-bottom:48px;
+    text-align:center;
+    font-size:.95rem;
+  }
+  .hub-cards{
+    display:flex;
+    gap:28px;
+    flex-wrap:wrap;
+    justify-content:center;
+    max-width:900px;
+  }
+  .hub-card{
+    position:relative;
+    width:190px;
+    padding:34px 18px 26px;
+    background:linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border:1px solid rgba(217,180,92,0.35);
+    border-radius:16px;
+    text-align:center;
+    cursor:pointer;
+    overflow:hidden;
+    opacity:0;
+    transform:translateY(24px);
+    animation:cardIn .6s ease forwards;
+    animation-delay:calc(var(--i, 0) * .12s);
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes cardIn{
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .hub-card.settled{ opacity:1; transform:translateY(0); }
+  .hub-card-inner{
+    animation:bob 3.6s ease-in-out infinite;
+    animation-delay:calc(var(--i, 0) * .25s);
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-7px); }
+  }
+  .hub-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform:skewX(-20deg);
+    transition:left .6s ease;
+  }
+  .hub-card:hover::before{ left:130%; }
+  .hub-card:hover, .hub-card:active{
+    transform:translateY(-8px) scale(1.03);
+    border-color:var(--gold-bright);
+    box-shadow:0 14px 30px rgba(217,180,92,0.18);
+  }
+  .hub-card .icon{
+    width:64px; height:64px;
+    margin:0 auto 16px;
+    transition:transform .35s ease;
+  }
+  .hub-card:hover .icon{ transform:scale(1.12) rotate(-4deg); }
+  .hub-card .label{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--gold-bright);
+    letter-spacing:.02em;
+  }
+
+  /* ---------- Back / close button ---------- */
+  .back-btn{
+    position:sticky;
+    top:0;
+    align-self:flex-start;
+    margin-bottom:18px;
+    background:rgba(255,255,255,0.85);
+    color:#5c1414;
+    border:none;
+    padding:9px 18px;
+    border-radius:999px;
+    font-family:'Poppins', sans-serif;
+    font-size:.85rem;
+    font-weight:500;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,0.3);
+    transition:transform .2s ease, background .2s ease;
+    z-index:5;
+  }
+  .back-btn:hover{ transform:translateX(-3px); background:#fff; }
+
+  .sub-panel{
+    width:100%;
+    max-width:880px;
+  }
+
+  /* ---------- Message page ---------- */
+  .paper-card{
+    background:
+      linear-gradient(var(--paper), var(--paper)) padding-box;
+    border-radius:4px;
+    padding:38px 30px 44px;
+    color:var(--ink);
+    box-shadow:0 30px 60px rgba(0,0,0,0.45);
+    position:relative;
+    clip-path:polygon(
+      0.5% 2%, 6% 0%, 22% 1.2%, 40% 0%, 58% 1%, 76% 0%, 94% 1.5%, 100% 0.5%,
+      99% 20%, 100% 40%, 99.3% 60%, 100% 80%, 99% 98%, 90% 100%, 70% 99%,
+      50% 100%, 30% 99%, 10% 100%, 0% 98%, 1% 78%, 0% 55%, 1% 32%, 0% 15%
+    );
+  }
+  .msg-title{
+    font-size:clamp(1.8rem, 5vw, 2.4rem);
+    color:#7a1414;
+    margin-bottom:10px;
+    text-align:center;
+    animation:titleDrop .6s ease both;
+  }
+  @keyframes titleDrop{
+    from{ opacity:0; transform:translateY(-14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .title-flourish{
+    display:block;
+    text-align:center;
+    margin:0 auto 26px;
+    width:90px;
+    height:2px;
+    background:linear-gradient(90deg, transparent, #c99a3f, transparent);
+  }
+  .polaroid-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+    gap:16px;
+    margin-bottom:30px;
+  }
+  .polaroid{
+    background:#fff;
+    padding:8px 8px 26px;
+    border-radius:2px;
+    box-shadow:0 8px 16px rgba(0,0,0,0.25);
+    transform:rotate(var(--r, -2deg));
+    transition:transform .25s ease, box-shadow .25s ease;
+    opacity:0;
+    animation:polaroidPop .55s cubic-bezier(.2,.8,.3,1.2) forwards;
+  }
+  .polaroid:hover{ transform:rotate(0deg) scale(1.06) translateY(-4px); box-shadow:0 16px 26px rgba(0,0,0,0.35); }
+  @keyframes polaroidPop{
+    from{ opacity:0; transform:translateY(22px) scale(.85) rotate(var(--r, -2deg)); }
+    to{ opacity:1; transform:translateY(0) scale(1) rotate(var(--r, -2deg)); }
+  }
+  .polaroid:nth-child(1){ animation-delay:.08s; }
+  .polaroid:nth-child(2){ animation-delay:.18s; }
+  .polaroid:nth-child(3){ animation-delay:.28s; }
+  .polaroid:nth-child(4){ animation-delay:.38s; }
+  .polaroid.settled{ opacity:1; }
+  .polaroid .photo{
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:1px;
+    background:linear-gradient(135deg, var(--pg1,#e9c9c9), var(--pg2,#8a2b2b));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .polaroid .photo svg{ width:38%; height:38%; opacity:.55; }
+  .polaroid .caption{
+    display:block;
+    text-align:center;
+    margin-top:8px;
+    font-family:'Great Vibes', cursive;
+    font-size:1.05rem;
+    color:#5c3d2e;
+  }
+
+  .msg-text{
+    font-size:1rem;
+    line-height:1.85;
+    color:#4a2f22;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .msg-text p{ margin-bottom:16px; }
+  .overlay.active .msg-text p{
+    opacity:0;
+    animation:textRise .55s ease forwards;
+  }
+  @keyframes textRise{
+    from{ opacity:0; transform:translateY(12px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .overlay.active .msg-text p:nth-child(1){ animation-delay:.42s; }
+  .overlay.active .msg-text p:nth-child(2){ animation-delay:.48s; }
+  .overlay.active .msg-text p:nth-child(3){ animation-delay:.54s; }
+  .overlay.active .msg-text p:nth-child(4){ animation-delay:.60s; }
+  .overlay.active .msg-text p:nth-child(5){ animation-delay:.66s; }
+  .overlay.active .msg-text p:nth-child(6){ animation-delay:.72s; }
+  .overlay.active .msg-text p:nth-child(7){ animation-delay:.78s; }
+  .overlay.active .poem-block{
+    opacity:0;
+    animation:textRise .6s ease forwards;
+    animation-delay:.9s;
+  }
+  .overlay.active .msg-signature{
+    opacity:0;
+    animation:textRise .5s ease forwards;
+    animation-delay:1.05s;
+  }
+  .msg-signature{
+    margin-top:22px;
+    text-align:right;
+    font-family:'Great Vibes', cursive;
+    font-size:1.6rem;
+    color:#7a1414;
+  }
+  .poem-block{
+    margin-top:26px;
+    padding:18px 20px;
+    border-left:3px solid #c99a3f;
+    background:rgba(201,154,63,0.08);
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:.98rem;
+    line-height:1.9;
+    color:#5c3d2e;
+  }
+
+  /* ---------- Flower page ---------- */
+  .flower-stage{
+    position:relative;
+    width:100%;
+    max-width:560px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .flower-title{
+    font-size:clamp(1.9rem, 5vw, 2.6rem);
+    color:var(--gold-bright);
+    margin-bottom:18px;
+    text-align:center;
+  }
+  .bouquet-box{
+    position:relative;
+    width:min(84vw, 320px);
+    aspect-ratio:1/1.15;
+    margin:10px auto 26px;
+    cursor:pointer;
+    transition:transform .25s ease;
+  }
+  .bouquet-box:hover, .bouquet-box:active{
+    transform:scale(1.06);
+  }
+  .bouquet-box svg{
+    display:block;
+    animation:sway 5s ease-in-out infinite;
+    transform-origin:50% 90%;
+  }
+  @keyframes sway{
+    0%,100%{ transform:rotate(-2deg); }
+    50%{ transform:rotate(2deg); }
+  }
+  .bubbles{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    justify-content:center;
+    max-width:620px;
+  }
+  .bubble{
+    background:var(--cream);
+    color:#5c3d2e;
+    padding:12px 16px;
+    border-radius:14px;
+    font-size:.85rem;
+    line-height:1.4;
+    max-width:190px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.3);
+    position:relative;
+    transform:rotate(var(--br, -1deg));
+    transition:transform .25s ease, box-shadow .25s ease;
+    opacity:0;
+    animation:bubblePop .5s cubic-bezier(.25,.9,.35,1.2) forwards;
+    animation-delay:calc(.35s + var(--i, 0) * .1s);
+  }
+  .bubble:hover{
+    transform:rotate(0deg) scale(1.06) translateY(-3px);
+    box-shadow:0 14px 24px rgba(0,0,0,0.38);
+  }
+  .bubble b{ color:#7a1414; }
+  @keyframes bubblePop{
+    from{ opacity:0; transform:translateY(16px) scale(.8) rotate(var(--br, -1deg)); }
+    to{ opacity:1; transform:translateY(0) scale(1) rotate(var(--br, -1deg)); }
+  }
+  .bubble.settled{ opacity:1; }
+
+  /* ---------- Cake page ---------- */
+  .gingham-wrap{
+    width:100%;
+    border-radius:14px;
+    padding:26px 14px 40px;
+    background-color:#7a1414;
+    background-image:
+      linear-gradient(90deg, rgba(255,255,255,0.14) 50%, transparent 50%),
+      linear-gradient(rgba(255,255,255,0.14) 50%, transparent 50%);
+    background-size:34px 34px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.45);
+  }
+  .cake-inner{
+    background:var(--paper);
+    max-width:820px;
+    margin:0 auto;
+    padding:30px 22px 38px;
+    border-radius:4px;
+    color:var(--ink);
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+  }
+  .cake-title{
+    font-size:clamp(1.8rem, 5vw, 2.4rem);
+    color:#7a1414;
+    text-align:center;
+    margin-bottom:10px;
+    animation:titleDrop .6s ease both;
+  }
+
+  .vinyl-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin:34px 0 10px;
+  }
+  .vinyl{
+    width:180px; height:180px;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at center, #111 0 8%, #222 8% 10%, #111 10% 14%, #222 14% 16%,
+      #111 16% 22%, #222 22% 24%, #111 24% 30%, #222 30% 32%, #111 32%);
+    box-shadow:0 14px 30px rgba(0,0,0,0.5), 0 0 0 0 rgba(217,180,92,0);
+    position:relative;
+    cursor:pointer;
+    animation:spin 6s linear infinite;
+    transition:box-shadow .5s ease, transform .3s ease;
+  }
+  .vinyl:hover{ animation-duration:2.2s; transform:scale(1.03); }
+  .vinyl-wrap.playing .vinyl{
+    box-shadow:0 14px 30px rgba(0,0,0,0.5), 0 0 0 10px rgba(217,180,92,0.16), 0 0 34px rgba(217,180,92,0.4);
+  }
+  .vinyl::after{
+    content:"♫";
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:56px; height:56px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #e6c16b, #a56c1c 70%);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+    color:#3a2408;
+    box-shadow:inset 0 2px 3px rgba(255,255,255,0.4);
+  }
+  @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .equalizer{
+    display:flex;
+    align-items:flex-end;
+    gap:3px;
+    height:16px;
+    margin-top:10px;
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  .vinyl-wrap.playing .equalizer{ opacity:1; }
+  .equalizer span{
+    width:3px;
+    background:#c99a3f;
+    border-radius:2px;
+    animation:eq .8s ease-in-out infinite;
+  }
+  .equalizer span:nth-child(1){ animation-delay:0s; }
+  .equalizer span:nth-child(2){ animation-delay:.15s; }
+  .equalizer span:nth-child(3){ animation-delay:.3s; }
+  .equalizer span:nth-child(4){ animation-delay:.45s; }
+  @keyframes eq{
+    0%,100%{ height:4px; }
+    50%{ height:16px; }
+  }
+  .vinyl-caption{
+    margin-top:14px;
+    font-family:'Great Vibes', cursive;
+    font-size:1.3rem;
+    color:#7a1414;
+    text-align:center;
+  }
+  .vinyl-sub{
+    font-size:.8rem;
+    color:#8a6a52;
+    margin-top:4px;
+  }
+
+  /* ---------- Video modal ---------- */
+  .video-modal{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .video-modal.active{ display:flex; animation:fadeIn .35s ease forwards; }
+  .video-modal-scrim{
+    position:fixed; inset:0;
+    background:rgba(10,2,2,0.85);
+  }
+  .video-modal-content{
+    position:relative;
+    width:min(92vw, 720px);
+    aspect-ratio:16/9;
+    background:#000;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6);
+    z-index:1;
+  }
+  .video-modal-content iframe{
+    width:100%; height:100%; border:0;
+  }
+  .video-close{
+    position:absolute;
+    top:-42px; right:0;
+    background:none;
+    border:none;
+    color:var(--cream);
+    font-size:1rem;
+    cursor:pointer;
+    letter-spacing:.05em;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:640px){
+    .hub-cards{ gap:18px; }
+    .hub-card{ width:100%; max-width:280px; padding:26px 18px 22px; }
+    .paper-card{ padding:28px 18px 34px; }
+    .gingham-wrap{ padding:20px 8px 30px; }
+    .cake-inner{ padding:22px 14px 30px; }
+    .video-close{ top:-36px; }
+  }
+</style>
+</head>
+<body>
+  <div id="ambient"></div>
+
+  <!-- ===================== LANDING ===================== -->
+  <section id="landing" class="view active">
+    <h1 class="cursive shimmer">Happy Birthday!</h1>
+    <p class="sub serif">for Alya Sofina &middot; 12 July</p>
+    <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+      <div class="envelope-glow"></div>
+      <div class="envelope-wrap" id="envelope" onclick="openEnvelope()">
+        <div class="envelope-body">
+          <div class="envelope-pocket"></div>
+          <div class="envelope-flap"></div>
+          <div class="wax-seal"><span>A</span></div>
+          <div class="envelope-shade-l"></div>
+          <div class="envelope-shade-r"></div>
+        </div>
+      </div>
+    </div>
+    <p class="open-hint">✦ Click the seal to open ✦</p>
+  </section>
+
+  <!-- ===================== HUB ===================== -->
+  <section id="hub" class="view">
+    <h2 class="cursive shimmer">These are for you</h2>
+    <p class="sub">choose one, or open them all</p>
+    <div class="hub-cards">
+      <div class="hub-card" style="--i:0" onclick="openOverlay('message')">
+        <div class="hub-card-inner">
+          <svg class="icon" viewBox="0 0 64 64" fill="none">
+            <rect x="6" y="14" width="52" height="38" rx="3" fill="#fdf6ec" stroke="#d9b45c" stroke-width="2"/>
+            <path d="M8 16 L32 38 L56 16" stroke="#d9b45c" stroke-width="2" fill="none"/>
+          </svg>
+          <div class="label serif">Message</div>
+        </div>
+      </div>
+      <div class="hub-card" style="--i:1" onclick="openOverlay('flower')">
+        <div class="hub-card-inner">
+          <svg class="icon" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="20" r="9" fill="#e8b94a"/>
+            <circle cx="20" cy="30" r="8" fill="#c94b4b"/>
+            <circle cx="44" cy="30" r="8" fill="#c94b4b"/>
+            <circle cx="32" cy="34" r="8" fill="#d9635f"/>
+            <path d="M32 40 L32 58" stroke="#4c7c4c" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="label serif">Flower</div>
+        </div>
+      </div>
+      <div class="hub-card" style="--i:2" onclick="openOverlay('cake')">
+        <div class="hub-card-inner">
+          <svg class="icon" viewBox="0 0 64 64" fill="none">
+            <path d="M12 54 L20 28 L44 28 L52 54 Z" fill="#f2d9b8" stroke="#d9b45c" stroke-width="1.5"/>
+            <path d="M20 28 L24 40 L40 40 L44 28 Z" fill="#e8b09a"/>
+            <rect x="30" y="14" width="4" height="12" fill="#d9b45c"/>
+            <path d="M32 8 C29 12 35 12 32 16" stroke="#e8783c" stroke-width="2" fill="none"/>
+          </svg>
+          <div class="label serif">Cake</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MESSAGE OVERLAY ===================== -->
+  <div class="overlay" id="overlay-message">
+    <div class="overlay-scrim" onclick="closeOverlay('message')"></div>
+    <div class="sub-panel">
+      <button class="back-btn" onclick="closeOverlay('message')">← Back</button>
+      <div class="paper-card">
+        <h3 class="msg-title cursive">A Little Letter for You</h3>
+        <span class="title-flourish"></span>
+
+        <div class="polaroid-grid">
+          <div class="polaroid" style="--r:-4deg;">
+            <div class="photo"><img src="photos/alya-1.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+          </div>
+          <div class="polaroid" style="--r:3deg;">
+            <div class="photo"><img src="photos/alya-2.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+          </div>
+          <div class="polaroid" style="--r:-2deg;">
+            <div class="photo"><img src="photos/alya-1.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+          </div>
+          <div class="polaroid" style="--r:4deg;">
+            <div class="photo"><img src="photos/alya-2.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+          </div>
+        </div>
+
+        <div class="msg-text">
+          <p>Dear Alya Sofina,</p>
+          <p>Happy Birthday! 🎉</p>
+          <p>I hope your special day is filled with happiness, laughter, and beautiful moments. May Allah bless you with good health, success, and endless joy in everything you do.</p>
+          <p>To be honest, I never expected that meeting someone new could leave such a nice impression on me. From the first time we talked, I noticed how sweet, kind hearted, and genuine you are. Your smile and the way you treat people show a beautiful side of you that is really special.</p>
+          <p>There is a Latin phrase called <em>Prima Facie</em>, which means "at first sight." Somehow, it reminds me of the feeling I had when I first met you. It was a small moment, but it made me want to know you better.</p>
+          <p>I know we have only just met, and I do not want to rush anything. I just want you to know that I appreciate your presence, and I enjoy getting to know you. I hope we can create more happy conversations and beautiful memories together.</p>
+          <p>Stay the kind, sweet, and amazing person you are. May this new year of your life bring you everything you wish for.</p>
+          <p>Happy Birthday, Alya. 🌸</p>
+        </div>
+
+        <div class="poem-block">
+          <p style="margin:0 0 10px; font-family:'Great Vibes', cursive; font-style:normal; font-size:1.3rem; color:#7a1414; text-align:center;">A Birthday Verse for Alya Sofina</p>
+          Happy birthday, Alya fair,<br>
+          May joy and love be everywhere.<br>
+          Thy smile shines bright like morning's light,<br>
+          And fills the world with warm delight.<br><br>
+          <em>Prima Facie</em>, my heart did know,<br>
+          A gentle feeling soon did grow.<br>
+          May all thy dreams take joyful flight,<br>
+          God keep thee safe, both day and night.<br><br>
+          Happy Birthday, dear Alya. 🌸
+        </div>
+
+        <p class="msg-signature">With sincerity, Harith</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FLOWER OVERLAY ===================== -->
+  <div class="overlay" id="overlay-flower">
+    <div class="overlay-scrim" onclick="closeOverlay('flower')"></div>
+    <div class="sub-panel flower-stage">
+      <button class="back-btn" onclick="closeOverlay('flower')" style="align-self:flex-start;">← Back</button>
+      <p style="font-size:.75rem; color:rgba(253,246,236,0.55); margin:-8px 0 6px; text-align:center;">(tap the bouquet ✦)</p>
+      <h3 class="flower-title cursive shimmer">A Bouquet, Just Because</h3>
+
+      <div class="bouquet-box" id="bouquet" onclick="bloomBouquet(event)">
+        <svg viewBox="0 0 300 340" width="100%" height="100%">
+          <!-- stems -->
+          <path d="M150 260 L150 330" stroke="#4c7c4c" stroke-width="6" stroke-linecap="round"/>
+          <path d="M120 250 L100 320" stroke="#4c7c4c" stroke-width="5" stroke-linecap="round"/>
+          <path d="M180 250 L200 320" stroke="#4c7c4c" stroke-width="5" stroke-linecap="round"/>
+          <!-- leaves -->
+          <path d="M150 300 C130 300 120 288 112 278 C132 278 148 285 150 300Z" fill="#5c9160"/>
+          <path d="M150 290 C170 290 182 278 190 268 C170 268 154 275 150 290Z" fill="#4c7c4c"/>
+
+          <!-- sunflower left -->
+          <g transform="translate(95,180)">
+            <g id="petalsL">
+              <ellipse cx="0" cy="-38" rx="10" ry="22" fill="#e8b94a"/>
+              <ellipse cx="27" cy="-27" rx="10" ry="22" fill="#e8b94a" transform="rotate(45 27 -27)"/>
+              <ellipse cx="38" cy="0" rx="10" ry="22" fill="#e8b94a" transform="rotate(90 38 0)"/>
+              <ellipse cx="27" cy="27" rx="10" ry="22" fill="#e8b94a" transform="rotate(135 27 27)"/>
+              <ellipse cx="0" cy="38" rx="10" ry="22" fill="#e8b94a" transform="rotate(180 0 38)"/>
+              <ellipse cx="-27" cy="27" rx="10" ry="22" fill="#e8b94a" transform="rotate(225 -27 27)"/>
+              <ellipse cx="-38" cy="0" rx="10" ry="22" fill="#e8b94a" transform="rotate(270 -38 0)"/>
+              <ellipse cx="-27" cy="-27" rx="10" ry="22" fill="#e8b94a" transform="rotate(315 -27 -27)"/>
+            </g>
+            <circle cx="0" cy="0" r="17" fill="#7a4a26"/>
+          </g>
+
+          <!-- sunflower right -->
+          <g transform="translate(205,150)">
+            <g id="petalsR">
+              <ellipse cx="0" cy="-34" rx="9" ry="20" fill="#eec565"/>
+              <ellipse cx="24" cy="-24" rx="9" ry="20" fill="#eec565" transform="rotate(45 24 -24)"/>
+              <ellipse cx="34" cy="0" rx="9" ry="20" fill="#eec565" transform="rotate(90 34 0)"/>
+              <ellipse cx="24" cy="24" rx="9" ry="20" fill="#eec565" transform="rotate(135 24 24)"/>
+              <ellipse cx="0" cy="34" rx="9" ry="20" fill="#eec565" transform="rotate(180 0 34)"/>
+              <ellipse cx="-24" cy="24" rx="9" ry="20" fill="#eec565" transform="rotate(225 -24 24)"/>
+              <ellipse cx="-34" cy="0" rx="9" ry="20" fill="#eec565" transform="rotate(270 -34 0)"/>
+              <ellipse cx="-24" cy="-24" rx="9" ry="20" fill="#eec565" transform="rotate(315 -24 -24)"/>
+            </g>
+            <circle cx="0" cy="0" r="15" fill="#8a5a2e"/>
+          </g>
+
+          <!-- rose center -->
+          <g transform="translate(150,140)">
+            <circle r="30" fill="#c94b4b"/>
+            <circle r="22" fill="#d9635f"/>
+            <circle r="13" fill="#e8837c"/>
+            <circle r="5" fill="#f2a89f"/>
+          </g>
+
+          <!-- ribbon -->
+          <path d="M120 255 Q150 275 180 255" stroke="#d9b45c" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="bubbles">
+        <div class="bubble" style="--br:-3deg; --i:0;"><b>Kind</b> — you notice people others walk past.</div>
+        <div class="bubble" style="--br:2deg; --i:1;"><b>Warm</b> — your presence feels like sunlight.</div>
+        <div class="bubble" style="--br:-1deg; --i:2;"><b>Funny</b> — you make ordinary days feel lighter.</div>
+        <div class="bubble" style="--br:3deg; --i:3;"><b>Strong</b> — quietly, without needing to prove it.</div>
+        <div class="bubble" style="--br:-2deg; --i:4;"><b>Genuine</b> — never a version of you that isn't real.</div>
+        <div class="bubble" style="--br:1deg; --i:5;"><b>Beautiful</b> — inside first, and it shows outside too.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CAKE OVERLAY ===================== -->
+  <div class="overlay" id="overlay-cake">
+    <div class="overlay-scrim" onclick="closeOverlay('cake')"></div>
+    <div class="sub-panel">
+      <button class="back-btn" onclick="closeOverlay('cake')">← Back</button>
+      <div class="gingham-wrap">
+        <div class="cake-inner">
+          <h3 class="cake-title cursive">One More Slice of Us</h3>
+          <span class="title-flourish"></span>
+
+          <div class="polaroid-grid">
+            <div class="polaroid" style="--r:2deg;">
+              <div class="photo"><img src="photos/alya-1.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+              <span class="caption">memory 1</span>
+            </div>
+            <div class="polaroid" style="--r:-3deg;">
+              <div class="photo"><img src="photos/alya-2.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+              <span class="caption">memory 2</span>
+            </div>
+            <div class="polaroid" style="--r:3deg;">
+              <div class="photo"><img src="photos/alya-1.jpg" alt="Alya" style="width:100%;height:100%;object-fit:cover;border-radius:1px;"></div>
+              <span class="caption">memory 3</span>
+            </div>
+          </div>
+
+          <div class="vinyl-wrap" id="vinyl-wrap">
+            <div class="vinyl" onclick="openVideo()" title="Play the song"></div>
+            <div class="equalizer"><span></span><span></span><span></span><span></span></div>
+            <p class="vinyl-caption">a song that reminds me of you</p>
+            <p class="vinyl-sub">(click the record to play)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VIDEO MODAL ===================== -->
+  <div class="video-modal" id="video-modal">
+    <div class="video-modal-scrim" onclick="closeVideo()"></div>
+    <div class="video-modal-content">
+      <button class="video-close" onclick="closeVideo()">close ✕</button>
+      <iframe id="yt-frame" src="" title="Song" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+<script>
+  var YOUTUBE_VIDEO_ID = "KI_UcqvuUtQ";
+
+  /* ---------- Ambient floating sparkles ---------- */
+  (function(){
+    var container = document.getElementById('ambient');
+    var symbols = ['✦','✧','♥'];
+    var count = window.innerWidth < 640 ? 10 : 18;
+    for(var i=0;i<count;i++){
+      var p = document.createElement('span');
+      p.className = 'ambient-particle';
+      p.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      p.style.left = (Math.random()*100) + 'vw';
+      p.style.fontSize = (10 + Math.random()*14) + 'px';
+      p.style.setProperty('--dx', (Math.random()*80 - 40) + 'px');
+      p.style.setProperty('--peak', (0.35 + Math.random()*0.5).toFixed(2));
+      var duration = 10 + Math.random()*14;
+      p.style.animationDuration = duration + 's, ' + duration + 's';
+      p.style.animationDelay = (-Math.random()*duration) + 's, ' + (-Math.random()*duration) + 's';
+      container.appendChild(p);
+    }
+  })();
+
+  /* ---------- Cursor sparkle trail (fine pointers only) ---------- */
+  if(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches){
+    var lastSparkle = 0;
+    document.addEventListener('mousemove', function(e){
+      var now = Date.now();
+      if(now - lastSparkle < 90) return;
+      lastSparkle = now;
+      var s = document.createElement('span');
+      s.className = 'cursor-sparkle';
+      s.textContent = Math.random() < 0.5 ? '✦' : '✧';
+      s.style.left = e.clientX + 'px';
+      s.style.top = e.clientY + 'px';
+      document.body.appendChild(s);
+      s.addEventListener('animationend', function(){ s.remove(); });
+    });
+  }
+
+  /* ---------- Settle entrance animations so hover states take back over ---------- */
+  document.addEventListener('animationend', function(e){
+    if(e.target.classList && (e.target.classList.contains('polaroid') || e.target.classList.contains('bubble') || e.target.classList.contains('hub-card'))){
+      e.target.classList.add('settled');
+    }
+  });
+
+  /* ---------- Confetti / heart bursts ---------- */
+  function spawnBurst(x, y, opts){
+    var count = opts.count || 20;
+    for(var i=0;i<count;i++){
+      var el = document.createElement('div');
+      el.className = 'confetti-bit';
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 50 + Math.random() * (opts.spread || 100);
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.setProperty('--cx', Math.cos(angle) * dist + 'px');
+      el.style.setProperty('--cy', Math.sin(angle) * dist + 'px');
+      el.style.setProperty('--cr', (Math.random() * 360) + 'deg');
+      el.style.animationDelay = (Math.random() * 0.12) + 's';
+      if(opts.glyph){
+        el.textContent = opts.glyph;
+        el.style.width = 'auto';
+        el.style.height = 'auto';
+        el.style.fontSize = (12 + Math.random()*8) + 'px';
+        el.style.color = opts.colors[Math.floor(Math.random()*opts.colors.length)];
+      } else {
+        el.style.background = opts.colors[Math.floor(Math.random()*opts.colors.length)];
+        el.style.borderRadius = Math.random() < 0.5 ? '50%' : '2px';
+      }
+      document.body.appendChild(el);
+      el.addEventListener('animationend', function(){ this.remove(); });
+    }
+  }
+
+  function bloomBouquet(e){
+    var rect = document.getElementById('bouquet').getBoundingClientRect();
+    spawnBurst(rect.left + rect.width/2, rect.top + rect.height/2, {
+      count:14, spread:90, glyph:'♥',
+      colors:['#e8837c','#c94b4b','#f0a8a0']
+    });
+  }
+
+  function openEnvelope(){
+    var wrap = document.getElementById('envelope');
+    if(wrap.classList.contains('opened')) return;
+    wrap.classList.add('opened');
+    var rect = wrap.getBoundingClientRect();
+    spawnBurst(rect.left + rect.width/2, rect.top + rect.height*0.4, {
+      count:26, spread:140,
+      colors:['#d9b45c','#f0d382','#fdf6ec','#c94b4b']
+    });
+    setTimeout(function(){
+      switchView('landing', 'hub');
+    }, 650);
+  }
+
+  function switchView(fromId, toId){
+    var from = document.getElementById(fromId);
+    var to = document.getElementById(toId);
+    from.classList.add('leaving');
+    setTimeout(function(){
+      from.classList.remove('active');
+      from.classList.remove('leaving');
+      to.classList.add('active');
+    }, 320);
+  }
+
+  function openOverlay(name){
+    document.getElementById('overlay-' + name).classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeOverlay(name){
+    var el = document.getElementById('overlay-' + name);
+    el.classList.add('leaving');
+    setTimeout(function(){
+      el.classList.remove('active');
+      el.classList.remove('leaving');
+      document.body.style.overflow = '';
+    }, 280);
+  }
+
+  function openVideo(){
+    var frame = document.getElementById('yt-frame');
+    frame.src = 'https://www.youtube.com/embed/' + YOUTUBE_VIDEO_ID + '?autoplay=1&rel=0';
+    document.getElementById('video-modal').classList.add('active');
+    document.getElementById('vinyl-wrap').classList.add('playing');
+  }
+
+  function closeVideo(){
+    document.getElementById('video-modal').classList.remove('active');
+    document.getElementById('yt-frame').src = '';
+    document.getElementById('vinyl-wrap').classList.remove('playing');
+  }
+</script>
+</body>
+</html>
