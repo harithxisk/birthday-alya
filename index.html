@@ -52,6 +52,17 @@
   .serif{font-family:'Playfair Display', serif;}
   .settled{ animation:none !important; }
 
+  #bg-player{
+    position:fixed !important;
+    top:0; left:0;
+    width:2px !important;
+    height:2px !important;
+    overflow:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+    z-index:-1 !important;
+  }
+
   /* ---------- Ambient sparkles ---------- */
   #ambient{
     position:fixed;
@@ -410,6 +421,29 @@
     z-index:5;
   }
   .back-btn:hover{ transform:translateX(-3px); background:#fff; }
+
+  .msg-toolbar{
+    position:sticky;
+    top:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+    z-index:5;
+  }
+  .msg-toolbar .back-btn{ margin-bottom:0; }
+  .music-btn{
+    background:rgba(255,255,255,0.85);
+    border:none;
+    width:38px; height:38px;
+    border-radius:50%;
+    font-size:1.05rem;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,0.3);
+    transition:transform .2s ease, background .2s ease;
+  }
+  .music-btn:hover{ transform:scale(1.08); background:#fff; }
+  .music-btn.muted{ opacity:.55; filter:grayscale(1); }
 
   .sub-panel{
     width:100%;
@@ -770,6 +804,7 @@
 </head>
 <body>
   <div id="ambient"></div>
+  <div id="bg-player"></div>
 
   <!-- ===================== LANDING ===================== -->
   <section id="landing" class="view active">
@@ -834,7 +869,10 @@
   <div class="overlay" id="overlay-message">
     <div class="overlay-scrim" onclick="closeOverlay('message')"></div>
     <div class="sub-panel">
-      <button class="back-btn" onclick="closeOverlay('message')">← Back</button>
+      <div class="msg-toolbar">
+        <button class="back-btn" onclick="closeOverlay('message')">← Back</button>
+        <button class="music-btn" id="music-toggle" onclick="toggleBgMusic()" title="Mute/unmute music">🎵</button>
+      </div>
       <div class="paper-card">
         <h3 class="msg-title cursive">A Little Letter for You</h3>
         <span class="title-flourish"></span>
@@ -1000,8 +1038,55 @@
     </div>
   </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
   var YOUTUBE_VIDEO_ID = "KI_UcqvuUtQ";
+
+  /* ---------- Background music (plays while reading the letter) ---------- */
+  var bgPlayer = null;
+  var bgPlayerReady = false;
+  var bgMusicWanted = false;
+  var bgMuted = false;
+
+  function onYouTubeIframeAPIReady(){
+    bgPlayer = new YT.Player('bg-player', {
+      videoId: YOUTUBE_VIDEO_ID,
+      width:'2',
+      height:'2',
+      playerVars:{ controls:0, disablekb:1, modestbranding:1, playsinline:1 },
+      events:{
+        onReady:function(){
+          bgPlayerReady = true;
+          if(bgMusicWanted) bgPlayer.playVideo();
+        }
+      }
+    });
+  }
+
+  function playBgMusic(){
+    bgMusicWanted = true;
+    if(bgPlayerReady) bgPlayer.playVideo();
+  }
+
+  function pauseBgMusic(){
+    bgMusicWanted = false;
+    if(bgPlayerReady) bgPlayer.pauseVideo();
+  }
+
+  function toggleBgMusic(){
+    var btn = document.getElementById('music-toggle');
+    if(!bgPlayerReady) return;
+    bgMuted = !bgMuted;
+    if(bgMuted){
+      bgPlayer.mute();
+      btn.classList.add('muted');
+      btn.textContent = '🔇';
+    } else {
+      bgPlayer.unMute();
+      btn.classList.remove('muted');
+      btn.textContent = '🎵';
+    }
+  }
 
   /* ---------- Ambient floating sparkles ---------- */
   (function(){
@@ -1112,6 +1197,7 @@
   function openOverlay(name){
     document.getElementById('overlay-' + name).classList.add('active');
     document.body.style.overflow = 'hidden';
+    if(name === 'message') playBgMusic();
   }
 
   function closeOverlay(name){
@@ -1122,9 +1208,11 @@
       el.classList.remove('leaving');
       document.body.style.overflow = '';
     }, 280);
+    if(name === 'message') pauseBgMusic();
   }
 
   function openVideo(){
+    pauseBgMusic();
     var frame = document.getElementById('yt-frame');
     frame.src = 'https://www.youtube.com/embed/' + YOUTUBE_VIDEO_ID + '?autoplay=1&rel=0';
     document.getElementById('video-modal').classList.add('active');
